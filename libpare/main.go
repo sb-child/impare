@@ -8,35 +8,43 @@ package main
 #include <stdint.h>
 #include <stdlib.h>
 
+typedef struct CreateTaskRequestRef {
+  uintptr_t data_shards;
+  uintptr_t parity_shards;
+} CreateTaskRequestRef;
+
+typedef struct CreateTaskResponseRef {
+  uint64_t id;
+} CreateTaskResponseRef;
+
 typedef struct ListRef {
   const void *ptr;
   uintptr_t len;
 } ListRef;
+
+typedef struct RemoveTaskRequestRef {
+  uint64_t id;
+} RemoveTaskRequestRef;
+
+typedef struct RemoveTaskResponseRef {
+  bool success;
+} RemoveTaskResponseRef;
 
 typedef struct StringRef {
   const uint8_t *ptr;
   uintptr_t len;
 } StringRef;
 
-typedef struct DemoResponseRef {
-  bool pass;
-} DemoResponseRef;
-
-typedef struct DemoRequestRef {
-  struct StringRef name;
-  uint8_t age;
-} DemoRequestRef;
-
 // hack from: https://stackoverflow.com/a/69904977
 __attribute__((weak))
-inline void DemoCall_demo_check_cb(const void *f_ptr, struct DemoResponseRef resp, const void *slot) {
-((void (*)(struct DemoResponseRef, const void*))f_ptr)(resp, slot);
+inline void SysApi_create_task_cb(const void *f_ptr, struct CreateTaskResponseRef resp, const void *slot) {
+((void (*)(struct CreateTaskResponseRef, const void*))f_ptr)(resp, slot);
 }
 
 // hack from: https://stackoverflow.com/a/69904977
 __attribute__((weak))
-inline void DemoCall_demo_check_async_cb(const void *f_ptr, struct DemoResponseRef resp, const void *slot) {
-((void (*)(struct DemoResponseRef, const void*))f_ptr)(resp, slot);
+inline void SysApi_remove_task_cb(const void *f_ptr, struct RemoveTaskResponseRef resp, const void *slot) {
+((void (*)(struct RemoveTaskResponseRef, const void*))f_ptr)(resp, slot);
 }
 */
 import "C"
@@ -45,32 +53,29 @@ import (
 	"unsafe"
 )
 
-var DemoCallImpl DemoCall
+var SysApiImpl SysApi
 
-type DemoCall interface {
-	demo_check(req DemoRequest) DemoResponse
-	demo_check_async(req DemoRequest) DemoResponse
+type SysApi interface {
+	create_task(req CreateTaskRequest) CreateTaskResponse
+	remove_task(req RemoveTaskRequest) RemoveTaskResponse
 }
 
-//export CDemoCall_demo_check
-func CDemoCall_demo_check(req C.DemoRequestRef, slot *C.void, cb *C.void) {
-	resp := DemoCallImpl.demo_check(newDemoRequest(req))
-	resp_ref, buffer := cvt_ref(cntDemoResponse, refDemoResponse)(&resp)
-	C.DemoCall_demo_check_cb(unsafe.Pointer(cb), resp_ref, unsafe.Pointer(slot))
+//export CSysApi_create_task
+func CSysApi_create_task(req C.CreateTaskRequestRef, slot *C.void, cb *C.void) {
+	resp := SysApiImpl.create_task(newCreateTaskRequest(req))
+	resp_ref, buffer := cvt_ref(cntCreateTaskResponse, refCreateTaskResponse)(&resp)
+	C.SysApi_create_task_cb(unsafe.Pointer(cb), resp_ref, unsafe.Pointer(slot))
 	runtime.KeepAlive(resp)
 	runtime.KeepAlive(buffer)
 }
 
-//export CDemoCall_demo_check_async
-func CDemoCall_demo_check_async(req C.DemoRequestRef, slot *C.void, cb *C.void) {
-	_new_req := newDemoRequest(req)
-	go func() {
-		resp := DemoCallImpl.demo_check_async(_new_req)
-		resp_ref, buffer := cvt_ref(cntDemoResponse, refDemoResponse)(&resp)
-		C.DemoCall_demo_check_async_cb(unsafe.Pointer(cb), resp_ref, unsafe.Pointer(slot))
-		runtime.KeepAlive(resp)
-		runtime.KeepAlive(buffer)
-	}()
+//export CSysApi_remove_task
+func CSysApi_remove_task(req C.RemoveTaskRequestRef, slot *C.void, cb *C.void) {
+	resp := SysApiImpl.remove_task(newRemoveTaskRequest(req))
+	resp_ref, buffer := cvt_ref(cntRemoveTaskResponse, refRemoveTaskResponse)(&resp)
+	C.SysApi_remove_task_cb(unsafe.Pointer(cb), resp_ref, unsafe.Pointer(slot))
+	runtime.KeepAlive(resp)
+	runtime.KeepAlive(buffer)
 }
 
 func newString(s_ref C.StringRef) string {
@@ -212,42 +217,78 @@ func refC_intptr_t(p *int, buffer *[]byte) C.intptr_t    { return C.intptr_t(*p)
 func refC_float(p *float32, buffer *[]byte) C.float      { return C.float(*p) }
 func refC_double(p *float64, buffer *[]byte) C.double    { return C.double(*p) }
 
-type DemoRequest struct {
-	name string
-	age  uint8
+type CreateTaskRequest struct {
+	data_shards   uint
+	parity_shards uint
 }
 
-func newDemoRequest(p C.DemoRequestRef) DemoRequest {
-	return DemoRequest{
-		name: newString(p.name),
-		age:  newC_uint8_t(p.age),
+func newCreateTaskRequest(p C.CreateTaskRequestRef) CreateTaskRequest {
+	return CreateTaskRequest{
+		data_shards:   newC_uintptr_t(p.data_shards),
+		parity_shards: newC_uintptr_t(p.parity_shards),
 	}
 }
-func cntDemoRequest(s *DemoRequest, cnt *uint) [0]C.DemoRequestRef {
-	return [0]C.DemoRequestRef{}
+func cntCreateTaskRequest(s *CreateTaskRequest, cnt *uint) [0]C.CreateTaskRequestRef {
+	return [0]C.CreateTaskRequestRef{}
 }
-func refDemoRequest(p *DemoRequest, buffer *[]byte) C.DemoRequestRef {
-	return C.DemoRequestRef{
-		name: refString(&p.name, buffer),
-		age:  refC_uint8_t(&p.age, buffer),
+func refCreateTaskRequest(p *CreateTaskRequest, buffer *[]byte) C.CreateTaskRequestRef {
+	return C.CreateTaskRequestRef{
+		data_shards:   refC_uintptr_t(&p.data_shards, buffer),
+		parity_shards: refC_uintptr_t(&p.parity_shards, buffer),
 	}
 }
 
-type DemoResponse struct {
-	pass bool
+type CreateTaskResponse struct {
+	id uint64
 }
 
-func newDemoResponse(p C.DemoResponseRef) DemoResponse {
-	return DemoResponse{
-		pass: newC_bool(p.pass),
+func newCreateTaskResponse(p C.CreateTaskResponseRef) CreateTaskResponse {
+	return CreateTaskResponse{
+		id: newC_uint64_t(p.id),
 	}
 }
-func cntDemoResponse(s *DemoResponse, cnt *uint) [0]C.DemoResponseRef {
-	return [0]C.DemoResponseRef{}
+func cntCreateTaskResponse(s *CreateTaskResponse, cnt *uint) [0]C.CreateTaskResponseRef {
+	return [0]C.CreateTaskResponseRef{}
 }
-func refDemoResponse(p *DemoResponse, buffer *[]byte) C.DemoResponseRef {
-	return C.DemoResponseRef{
-		pass: refC_bool(&p.pass, buffer),
+func refCreateTaskResponse(p *CreateTaskResponse, buffer *[]byte) C.CreateTaskResponseRef {
+	return C.CreateTaskResponseRef{
+		id: refC_uint64_t(&p.id, buffer),
+	}
+}
+
+type RemoveTaskRequest struct {
+	id uint64
+}
+
+func newRemoveTaskRequest(p C.RemoveTaskRequestRef) RemoveTaskRequest {
+	return RemoveTaskRequest{
+		id: newC_uint64_t(p.id),
+	}
+}
+func cntRemoveTaskRequest(s *RemoveTaskRequest, cnt *uint) [0]C.RemoveTaskRequestRef {
+	return [0]C.RemoveTaskRequestRef{}
+}
+func refRemoveTaskRequest(p *RemoveTaskRequest, buffer *[]byte) C.RemoveTaskRequestRef {
+	return C.RemoveTaskRequestRef{
+		id: refC_uint64_t(&p.id, buffer),
+	}
+}
+
+type RemoveTaskResponse struct {
+	success bool
+}
+
+func newRemoveTaskResponse(p C.RemoveTaskResponseRef) RemoveTaskResponse {
+	return RemoveTaskResponse{
+		success: newC_bool(p.success),
+	}
+}
+func cntRemoveTaskResponse(s *RemoveTaskResponse, cnt *uint) [0]C.RemoveTaskResponseRef {
+	return [0]C.RemoveTaskResponseRef{}
+}
+func refRemoveTaskResponse(p *RemoveTaskResponse, buffer *[]byte) C.RemoveTaskResponseRef {
+	return C.RemoveTaskResponseRef{
+		success: refC_bool(&p.success, buffer),
 	}
 }
 func main() {}
