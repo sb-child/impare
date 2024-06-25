@@ -1,0 +1,10 @@
+[package]
+name = "impare"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+rust2go = { version = "0.3.8" }
+
+[build-dependencies]
+rust2go = { version = "0.3.8", features = ["build"] }
