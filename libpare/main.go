@@ -13,6 +13,19 @@ typedef struct CreateTaskRequestRef {
   uintptr_t parity_shards;
 } CreateTaskRequestRef;
 
+typedef struct CreateTaskResponseRef {
+  uint64_t id;
+} CreateTaskResponseRef;
+
+typedef struct RemoveTaskRequestRef {
+  uint64_t id;
+} RemoveTaskRequestRef;
+
+typedef struct StringRef {
+  const uint8_t *ptr;
+  uintptr_t len;
+} StringRef;
+
 typedef struct RemoveTaskResponseRef {
   bool success;
 } RemoveTaskResponseRef;
@@ -21,19 +34,6 @@ typedef struct ListRef {
   const void *ptr;
   uintptr_t len;
 } ListRef;
-
-typedef struct StringRef {
-  const uint8_t *ptr;
-  uintptr_t len;
-} StringRef;
-
-typedef struct CreateTaskResponseRef {
-  uint64_t id;
-} CreateTaskResponseRef;
-
-typedef struct RemoveTaskRequestRef {
-  uint64_t id;
-} RemoveTaskRequestRef;
 
 // hack from: https://stackoverflow.com/a/69904977
 __attribute__((weak))
