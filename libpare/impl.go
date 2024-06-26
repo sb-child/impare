@@ -10,12 +10,14 @@ type Impl struct{}
 
 // create_task implements SysApi.
 func (i Impl) create_task(req CreateTaskRequest) CreateTaskResponse {
-	panic("unimplemented")
+	return CreateTaskResponse{id: 1}
+	// panic("unimplemented")
 }
 
 // remove_task implements SysApi.
 func (i Impl) remove_task(req RemoveTaskRequest) RemoveTaskResponse {
-	panic("unimplemented")
+	return RemoveTaskResponse{success: true}
+	// panic("unimplemented")
 }
 
 func init() {

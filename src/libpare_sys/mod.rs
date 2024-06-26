@@ -1,3 +1,3 @@
-mod sys;
+pub mod sys;
 
-fn aa() {}
+// fn aa() {}
