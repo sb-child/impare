@@ -25,7 +25,7 @@ mv impare/target/release/impare impare
 ### Windows
 
 ```shell
-cargo b -r
+CGO_ENABLED=1 cargo b -r
 mv impare/target/release/impare.exe impare.exe
 ```
 
