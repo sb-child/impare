@@ -3,10 +3,17 @@ package core
 // import "github.com/klauspost/reedsolomon"
 
 type Core struct {
+	opt Option
 }
 
-func NewCore() Core {
-	return Core{}
+func NewCore(opt Option) Core {
+	return Core{
+		opt: opt,
+	}
+}
+
+func (x Core) GetOption() Option {
+	return x.opt
 }
 
 func (x Core) Meow() {

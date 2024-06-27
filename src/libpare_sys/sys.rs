@@ -6,7 +6,7 @@ pub mod binding {
 #[derive(rust2go::R2G)]
 #[repr(C)]
 /// Create a new task
-/// https://pkg.go.dev/github.com/klauspost/reedsolomon@v1.12.1#New
+/// <https://pkg.go.dev/github.com/klauspost/reedsolomon@v1.12.1#New>
 pub struct CreateTaskRequest {
     pub data_shards: usize,
     pub parity_shards: usize,

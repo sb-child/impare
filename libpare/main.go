@@ -8,25 +8,6 @@ package main
 #include <stdint.h>
 #include <stdlib.h>
 
-typedef struct ListRef {
-  const void *ptr;
-  uintptr_t len;
-} ListRef;
-
-typedef struct CreateTaskRequestRef {
-  uintptr_t data_shards;
-  uintptr_t parity_shards;
-} CreateTaskRequestRef;
-
-typedef struct StringRef {
-  const uint8_t *ptr;
-  uintptr_t len;
-} StringRef;
-
-typedef struct CreateTaskResponseRef {
-  uint64_t id;
-} CreateTaskResponseRef;
-
 typedef struct RemoveTaskRequestRef {
   uint64_t id;
 } RemoveTaskRequestRef;
@@ -34,6 +15,25 @@ typedef struct RemoveTaskRequestRef {
 typedef struct RemoveTaskResponseRef {
   bool success;
 } RemoveTaskResponseRef;
+
+typedef struct CreateTaskResponseRef {
+  uint64_t id;
+} CreateTaskResponseRef;
+
+typedef struct ListRef {
+  const void *ptr;
+  uintptr_t len;
+} ListRef;
+
+typedef struct StringRef {
+  const uint8_t *ptr;
+  uintptr_t len;
+} StringRef;
+
+typedef struct CreateTaskRequestRef {
+  uintptr_t data_shards;
+  uintptr_t parity_shards;
+} CreateTaskRequestRef;
 
 // hack from: https://stackoverflow.com/a/69904977
 __attribute__((weak))
