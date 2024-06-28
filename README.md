@@ -31,7 +31,7 @@ mv target/release/impare impare
 Install `MinGW`:
 
 - Download <https://github.com/niXman/mingw-builds-binaries/releases/download/13.2.0-rt_v11-rev1/x86_64-13.2.0-release-win32-seh-msvcrt-rt_v11-rev1.7z>
-- Uncompress to a directory
+- Decompress to a directory
 - Add `X:\path\to\directory\mingw64\bin` to your `Path` variable
 
 Add `x86_64-pc-windows-gnu` target:
