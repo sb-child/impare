@@ -40,10 +40,17 @@ Add `x86_64-pc-windows-gnu` target:
 
 ```shell
 # git-bash
+
 cargo b -r --target=x86_64-pc-windows-gnu
 mv target/x86_64-pc-windows-gnu/release/impare.exe impare.exe
+
+# or set your default target to x86_64-pc-windows-gnu, then:
+cargo b -r
+mv target/release/impare.exe impare.exe
 ```
 
 ### Note
+
+- Please `regenerate cgo definitions` if there are some errors in `libpare/main.go`
 
 - Cross-compile to `*-musl` is not supported!
